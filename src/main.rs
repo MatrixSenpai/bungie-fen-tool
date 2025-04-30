@@ -13,26 +13,23 @@ struct Data {
 
 fn main() {
     let cache: HashMap<String, Data> = reqwest::blocking::get("https://tjl.co/queens-gambit-arg/data.json").unwrap().json().unwrap();
+    println!("Keys fetched from tjl: {}", cache.len());
 
     loop {
         let mut buffer = String::new();
         println!("Enter freq (0 to quit) >");
         std::io::stdin().read_line(&mut buffer).unwrap();
+        let buffer = buffer.trim();
 
-        println!("Checking input {buffer}");
-        let v = match buffer.trim().parse::<usize>() {
+        if buffer == "0" { std::process::exit(0); }
+
+        let v = match buffer.parse::<usize>() {
             Ok(v) => v,
             Err(e) => {
                 eprintln!("Not a number! {e:?}");
                 continue;
             }
         };
-
-        if v < 1000 || v > 9999 {
-            eprintln!("Invalid frequency size! Enter between 1000-9999");
-            continue
-        }
-        if v == 0 { std::process::exit(0); }
 
         let item = cache.iter().find(|(_, val)| {
             val.sequence.eq(&v)
